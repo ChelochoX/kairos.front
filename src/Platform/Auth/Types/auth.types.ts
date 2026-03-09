@@ -1,0 +1,14 @@
+export interface LoginPlataformaRequest {
+  identificador: string;
+  clave: string;
+}
+
+export interface LoginPlataformaResponse {
+  token: string;
+  expiraEnUtc: string;
+  usuarioPlataformaId: number;
+  nombre: string;
+  usuario: string;
+  email?: string | null;
+  rol: string;
+}
