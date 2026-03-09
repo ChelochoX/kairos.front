@@ -21,6 +21,3 @@ Arquitectura basada en **modularización por dominio**.
 
 ---
 
-# Arquitectura del proyecto
-
-El proyecto sigue una arquitectura modular orientada a dominios.
