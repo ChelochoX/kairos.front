@@ -2,7 +2,14 @@ export interface EmpresaDto {
   empresaId: number;
   codigoEmpresa: string;
   nombreComercial: string;
+  razonSocial?: string;
   rubro: string;
+  moneda?: string;
+  whatsAppContacto?: string;
+  emailContacto?: string;
+  logoPublicId?: string;
+  colorPrimario?: string;
+  colorSecundario?: string;
   activa: boolean;
 }
 
@@ -10,7 +17,14 @@ export interface Empresa {
   empresaId: number;
   codigoEmpresa: string;
   nombreComercial: string;
+  razonSocial?: string;
   rubro: string;
+  moneda?: string;
+  whatsAppContacto?: string;
+  emailContacto?: string;
+  logoPublicId?: string;
+  colorPrimario?: string;
+  colorSecundario?: string;
   activa: boolean;
 }
 
@@ -22,6 +36,9 @@ export interface CrearEmpresaRequest {
   moneda?: string;
   whatsAppContacto?: string;
   emailContacto?: string;
+  logoPublicId?: string;
+  colorPrimario?: string;
+  colorSecundario?: string;
 }
 
 export interface ActualizarEmpresaRequest {

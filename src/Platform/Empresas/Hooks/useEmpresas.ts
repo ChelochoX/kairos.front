@@ -19,7 +19,6 @@ export const useEmpresas = () => {
       else if (filtroActiva === "inactivas") activa = false;
 
       const data = await empresaService.getAll(activa);
-
       setEmpresas(data);
     } catch (err) {
       console.error("Error al cargar empresas:", err);

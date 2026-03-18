@@ -1,5 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../App/Store/auth.store";
+import { ModuleCard } from "../../../Shared/Components/ui/ModuleCard";
+import { PageHeader } from "../../../Shared/Components/ui/PageHeader";
+import { SectionCard } from "../../../Shared/Components/ui/SectionCard";
+import { StatCard } from "../../../Shared/Components/ui/StatCard";
 
 interface ModuloCard {
   title: string;
@@ -52,98 +56,71 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-          Centro de mando
-        </h2>
+    <div className="space-y-7">
+      <SectionCard className="overflow-hidden border-[color:color-mix(in_srgb,var(--color-primary)_18%,white)] bg-gradient-to-r from-[var(--color-card)] via-[var(--color-primary-soft)] to-[var(--color-card)]">
+        <PageHeader
+          title="Centro de mando"
+          description={`Bienvenido, ${
+            user?.nombre ?? "usuario"
+          }. Desde aquí puedes administrar la plataforma Kairos y acceder rápidamente a sus módulos principales.`}
+        />
+      </SectionCard>
 
-        <p className="mt-2 text-sm text-slate-600 sm:text-base">
-          Bienvenido,{" "}
-          <span className="font-medium text-slate-800">{user?.nombre}</span>.
-          Desde aquí puedes administrar la plataforma Kairos y acceder
-          rápidamente a sus módulos principales.
-        </p>
-      </section>
-
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">
+      <SectionCard>
+        <div className="mb-5">
+          <h3 className="text-xl font-semibold text-[var(--color-text)]">
             Resumen general
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-[var(--color-text-soft)]">
             Vista rápida del estado actual de la plataforma.
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm text-slate-500">Empresas</p>
-            <p className="mt-2 text-2xl font-semibold text-slate-900">
-              {resumen.empresas}
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm text-slate-500">Usuarios plataforma</p>
-            <p className="mt-2 text-2xl font-semibold text-slate-900">
-              {resumen.usuarios}
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm text-slate-500">Módulos catálogo</p>
-            <p className="mt-2 text-2xl font-semibold text-slate-900">
-              {resumen.modulosCatalogo}
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm text-slate-500">Módulos empresa</p>
-            <p className="mt-2 text-2xl font-semibold text-slate-900">
-              {resumen.modulosEmpresa}
-            </p>
-          </div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            title="Empresas"
+            value={resumen.empresas}
+            className="bg-gradient-to-br from-blue-50 to-white"
+          />
+          <StatCard
+            title="Usuarios plataforma"
+            value={resumen.usuarios}
+            className="bg-gradient-to-br from-emerald-50 to-white"
+          />
+          <StatCard
+            title="Módulos catálogo"
+            value={resumen.modulosCatalogo}
+            className="bg-gradient-to-br from-violet-50 to-white"
+          />
+          <StatCard
+            title="Módulos empresa"
+            value={resumen.modulosEmpresa}
+            className="bg-gradient-to-br from-amber-50 to-white"
+          />
         </div>
-      </section>
+      </SectionCard>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">
+      <SectionCard>
+        <div className="mb-5">
+          <h3 className="text-xl font-semibold text-[var(--color-text)]">
             Módulos principales
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-[var(--color-text-soft)]">
             Accede rápidamente a las áreas principales de administración.
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {modulos.map((modulo) => (
-            <button
+            <ModuleCard
               key={modulo.route}
-              type="button"
+              title={modulo.title}
+              description={modulo.description}
               onClick={() => navigate(modulo.route)}
-              className="group rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
-            >
-              <div className="flex h-full flex-col">
-                <h4 className="text-base font-semibold text-slate-900 sm:text-lg">
-                  {modulo.title}
-                </h4>
-
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  {modulo.description}
-                </p>
-
-                <div className="mt-5">
-                  <span className="inline-flex items-center rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white transition group-hover:bg-slate-800">
-                    Gestionar
-                  </span>
-                </div>
-              </div>
-            </button>
+            />
           ))}
         </div>
-      </section>
+      </SectionCard>
     </div>
   );
 };
