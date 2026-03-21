@@ -1,50 +1,50 @@
 import { useNavigate } from "react-router-dom";
 import { ModulePageHeader } from "../../../Shared/Components/ui/ModulePageHeader";
-import type { FiltroActiva } from "../Types/empresa.types";
+import type { FiltroActivo } from "../Types/usuario-plataforma.types";
 
-interface EmpresasHeaderProps {
-  filtroActiva: FiltroActiva;
-  onChangeFiltro: (value: FiltroActiva) => void;
-  onNuevaEmpresa: () => void;
+interface UsuariosPlataformaHeaderProps {
+  filtroActivo: FiltroActivo;
+  onChangeFiltro: (value: FiltroActivo) => void;
+  onNuevoUsuario: () => void;
   onRecargar: () => void;
 }
 
-export const EmpresasHeader = ({
-  filtroActiva,
+export const UsuariosPlataformaHeader = ({
+  filtroActivo,
   onChangeFiltro,
-  onNuevaEmpresa,
+  onNuevoUsuario,
   onRecargar,
-}: EmpresasHeaderProps) => {
+}: UsuariosPlataformaHeaderProps) => {
   const navigate = useNavigate();
 
   return (
     <ModulePageHeader
-      title="Empresas"
-      subtitle="Gestiona tus empresas desde un solo lugar."
+      title="Usuarios Plataforma"
+      subtitle="Administra usuarios administrativos y sus accesos."
       onBack={() => navigate("/dashboard")}
       backLabel="Volver al dashboard"
       actions={
         <>
           <button
             type="button"
-            onClick={onNuevaEmpresa}
+            onClick={onNuevoUsuario}
             className="inline-flex items-center justify-center rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
           >
-            + Nueva empresa
+            + Nuevo usuario
           </button>
 
           <select
-            value={filtroActiva}
+            value={filtroActivo}
             onChange={(e) =>
               onChangeFiltro(
-                e.target.value as "todas" | "activas" | "inactivas",
+                e.target.value as "todos" | "activos" | "inactivos",
               )
             }
             className="rounded-2xl border border-white/20 bg-white/95 px-3 py-2.5 text-sm text-slate-900 outline-none"
           >
-            <option value="todas">Todas</option>
-            <option value="activas">Activas</option>
-            <option value="inactivas">Inactivas</option>
+            <option value="todos">Todos</option>
+            <option value="activos">Activos</option>
+            <option value="inactivos">Inactivos</option>
           </select>
 
           <button
