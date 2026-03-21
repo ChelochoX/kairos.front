@@ -11,6 +11,7 @@ import type {
   ActualizarUsuarioPlataformaRequest,
   CambiarClaveUsuarioPlataformaRequest,
   CrearUsuarioPlataformaRequest,
+  RolPlataforma,
   UsuarioPlataforma,
 } from "../Types/usuario-plataforma.types";
 
@@ -51,6 +52,9 @@ export const UsuariosPlataformaPage = () => {
   const [passwordForm, setPasswordForm] =
     useState<CambiarClaveUsuarioPlataformaRequest>(passwordInitialForm());
 
+  const [roles, setRoles] = useState<RolPlataforma[]>([]);
+  const [loadingRoles, setLoadingRoles] = useState(false);
+
   const [savingCreate, setSavingCreate] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
@@ -61,21 +65,65 @@ export const UsuariosPlataformaPage = () => {
 
   useEffect(() => {
     if (!panelSuccess) return;
-    const timeout = setTimeout(() => setPanelSuccess(null), 2500);
+
+    const timeout = setTimeout(() => {
+      setPanelSuccess(null);
+    }, 2500);
+
     return () => clearTimeout(timeout);
   }, [panelSuccess]);
 
-  const openCreate = () => {
+  useEffect(() => {
+    if (!panelError) return;
+
+    const timeout = setTimeout(() => {
+      setPanelError(null);
+    }, 4500);
+
+    return () => clearTimeout(timeout);
+  }, [panelError]);
+
+  useEffect(() => {
+    const cargarRoles = async () => {
+      try {
+        setLoadingRoles(true);
+        const data = await usuarioPlataformaService.getRoles();
+        setRoles(data);
+      } catch (error) {
+        console.error("Error al obtener roles:", error);
+        showPanelError("No se pudieron cargar los roles disponibles.");
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+
+    void cargarRoles();
+  }, []);
+
+  const clearPanelMessages = () => {
     setPanelError(null);
     setPanelSuccess(null);
+  };
+
+  const showPanelError = (message: string) => {
+    setPanelSuccess(null);
+    setPanelError(message);
+  };
+
+  const showPanelSuccess = (message: string) => {
+    setPanelError(null);
+    setPanelSuccess(message);
+  };
+
+  const openCreate = () => {
+    clearPanelMessages();
     setSelectedUsuario(null);
     setCreateForm(createInitialForm());
     setMode("create");
   };
 
   const openDetail = async (usuario: UsuarioPlataforma) => {
-    setPanelError(null);
-    setPanelSuccess(null);
+    clearPanelMessages();
 
     try {
       const detalle = await usuarioPlataformaService.getById(
@@ -86,13 +134,12 @@ export const UsuariosPlataformaPage = () => {
       setMode("detail");
     } catch (error) {
       console.error("Error al obtener detalle:", error);
-      setPanelError("No se pudo obtener el detalle del usuario.");
+      showPanelError("No se pudo obtener el detalle del usuario.");
     }
   };
 
   const openEdit = async (usuario: UsuarioPlataforma) => {
-    setPanelError(null);
-    setPanelSuccess(null);
+    clearPanelMessages();
 
     try {
       const detalle = await usuarioPlataformaService.getById(
@@ -109,13 +156,12 @@ export const UsuariosPlataformaPage = () => {
       setMode("edit");
     } catch (error) {
       console.error("Error al obtener usuario para edición:", error);
-      setPanelError("No se pudo cargar el usuario para edición.");
+      showPanelError("No se pudo cargar el usuario para edición.");
     }
   };
 
   const openPassword = async (usuario: UsuarioPlataforma) => {
-    setPanelError(null);
-    setPanelSuccess(null);
+    clearPanelMessages();
 
     try {
       const detalle = await usuarioPlataformaService.getById(
@@ -127,7 +173,7 @@ export const UsuariosPlataformaPage = () => {
       setMode("password");
     } catch (error) {
       console.error("Error al obtener usuario para cambio de clave:", error);
-      setPanelError("No se pudo cargar el usuario para cambiar la clave.");
+      showPanelError("No se pudo cargar el usuario para cambiar la clave.");
     }
   };
 
@@ -140,20 +186,24 @@ export const UsuariosPlataformaPage = () => {
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!createForm.rol) {
+      showPanelError("Debes seleccionar un rol.");
+      return;
+    }
+
     try {
       setSavingCreate(true);
-      setPanelError(null);
-      setPanelSuccess(null);
+      clearPanelMessages();
 
       await usuarioPlataformaService.create(createForm);
       await recargar();
 
       setCreateForm(createInitialForm());
       setMode("list");
-      setPanelSuccess("Usuario de plataforma creado correctamente.");
+      showPanelSuccess("Usuario de plataforma creado correctamente.");
     } catch (error) {
       console.error("Error al crear usuario:", error);
-      setPanelError("No se pudo crear el usuario de plataforma.");
+      showPanelError("No se pudo crear el usuario de plataforma.");
     } finally {
       setSavingCreate(false);
     }
@@ -163,10 +213,14 @@ export const UsuariosPlataformaPage = () => {
     e.preventDefault();
     if (!selectedUsuario) return;
 
+    if (!editForm.rol) {
+      showPanelError("Debes seleccionar un rol.");
+      return;
+    }
+
     try {
       setSavingEdit(true);
-      setPanelError(null);
-      setPanelSuccess(null);
+      clearPanelMessages();
 
       await usuarioPlataformaService.update(
         selectedUsuario.usuarioPlataformaId,
@@ -180,10 +234,10 @@ export const UsuariosPlataformaPage = () => {
       setSelectedUsuario(detalleActualizado);
       await recargar();
       setMode("detail");
-      setPanelSuccess("Usuario de plataforma actualizado correctamente.");
+      showPanelSuccess("Usuario de plataforma actualizado correctamente.");
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
-      setPanelError("No se pudo actualizar el usuario de plataforma.");
+      showPanelError("No se pudo actualizar el usuario de plataforma.");
     } finally {
       setSavingEdit(false);
     }
@@ -194,14 +248,13 @@ export const UsuariosPlataformaPage = () => {
     if (!selectedUsuario) return;
 
     if (passwordForm.nuevaClave !== passwordForm.confirmarNuevaClave) {
-      setPanelError("La confirmación de clave no coincide.");
+      showPanelError("La confirmación de clave no coincide.");
       return;
     }
 
     try {
       setSavingPassword(true);
-      setPanelError(null);
-      setPanelSuccess(null);
+      clearPanelMessages();
 
       await usuarioPlataformaService.cambiarClave(
         selectedUsuario.usuarioPlataformaId,
@@ -210,10 +263,10 @@ export const UsuariosPlataformaPage = () => {
 
       setPasswordForm(passwordInitialForm());
       setMode("detail");
-      setPanelSuccess("Clave actualizada correctamente.");
+      showPanelSuccess("Clave actualizada correctamente.");
     } catch (error) {
       console.error("Error al cambiar clave:", error);
-      setPanelError("No se pudo actualizar la clave del usuario.");
+      showPanelError("No se pudo actualizar la clave del usuario.");
     } finally {
       setSavingPassword(false);
     }
@@ -222,8 +275,7 @@ export const UsuariosPlataformaPage = () => {
   const handleToggleActivo = async (usuario: UsuarioPlataforma) => {
     try {
       setChangingStatusId(usuario.usuarioPlataformaId);
-      setPanelError(null);
-      setPanelSuccess(null);
+      clearPanelMessages();
 
       await usuarioPlataformaService.setActivo(
         usuario.usuarioPlataformaId,
@@ -242,14 +294,14 @@ export const UsuariosPlataformaPage = () => {
         setSelectedUsuario(detalleActualizado);
       }
 
-      setPanelSuccess(
+      showPanelSuccess(
         usuario.activo
           ? "Usuario desactivado correctamente."
           : "Usuario activado correctamente.",
       );
     } catch (error) {
       console.error("Error al cambiar estado:", error);
-      setPanelError("No se pudo cambiar el estado del usuario.");
+      showPanelError("No se pudo cambiar el estado del usuario.");
     } finally {
       setChangingStatusId(null);
     }
@@ -264,47 +316,64 @@ export const UsuariosPlataformaPage = () => {
         onRecargar={() => void recargar()}
       />
 
-      {panelSuccess && (
-        <AlertMessage message={panelSuccess} variant="success" />
-      )}
-      {panelError && <AlertMessage message={panelError} variant="error" />}
+      <div className="space-y-3">
+        {panelSuccess && (
+          <AlertMessage
+            message={panelSuccess}
+            variant="success"
+            onClose={() => setPanelSuccess(null)}
+          />
+        )}
+
+        {panelError && (
+          <AlertMessage
+            message={panelError}
+            variant="error"
+            onClose={() => setPanelError(null)}
+          />
+        )}
+      </div>
 
       <SectionCard>
-        {loading && (
-          <AlertMessage
-            message="Cargando usuarios de plataforma..."
-            variant="info"
-          />
-        )}
+        <div className="space-y-4">
+          {loading && (
+            <AlertMessage
+              message="Cargando usuarios de plataforma..."
+              variant="info"
+            />
+          )}
 
-        {!loading && error && <AlertMessage message={error} variant="error" />}
+          {!loading && error && (
+            <AlertMessage message={error} variant="error" />
+          )}
 
-        {!loading && !error && usuarios.length === 0 && (
-          <EmptyState
-            title="No hay usuarios para mostrar"
-            description="Todavía no existen usuarios de plataforma para el filtro seleccionado."
-            actionLabel="Crear usuario"
-            onAction={openCreate}
-          />
-        )}
+          {!loading && !error && usuarios.length === 0 && (
+            <EmptyState
+              title="No hay usuarios para mostrar"
+              description="Todavía no existen usuarios de plataforma para el filtro seleccionado."
+              actionLabel="Crear usuario"
+              onAction={openCreate}
+            />
+          )}
 
-        {!loading && !error && usuarios.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {usuarios.map((usuario) => (
-              <UsuarioPlataformaCard
-                key={usuario.usuarioPlataformaId}
-                usuario={usuario}
-                changingStatus={
-                  changingStatusId === usuario.usuarioPlataformaId
-                }
-                onVerDetalle={(item) => void openDetail(item)}
-                onEditar={(item) => void openEdit(item)}
-                onCambiarClave={(item) => void openPassword(item)}
-                onToggleActivo={(item) => void handleToggleActivo(item)}
-              />
-            ))}
-          </div>
-        )}
+          {!loading && !error && usuarios.length > 0 && (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {usuarios.map((usuario) => (
+                <UsuarioPlataformaCard
+                  key={usuario.usuarioPlataformaId}
+                  usuario={usuario}
+                  changingStatus={
+                    changingStatusId === usuario.usuarioPlataformaId
+                  }
+                  onVerDetalle={(item) => void openDetail(item)}
+                  onEditar={(item) => void openEdit(item)}
+                  onCambiarClave={(item) => void openPassword(item)}
+                  onToggleActivo={(item) => void handleToggleActivo(item)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </SectionCard>
 
       <UsuarioPlataformaPanel
@@ -316,6 +385,8 @@ export const UsuariosPlataformaPage = () => {
         createForm={createForm}
         editForm={editForm}
         passwordForm={passwordForm}
+        roles={roles}
+        loadingRoles={loadingRoles}
         savingCreate={savingCreate}
         savingEdit={savingEdit}
         savingPassword={savingPassword}

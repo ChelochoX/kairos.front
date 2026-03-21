@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
       `/api/platform/usuariosplataforma/${usuarioPlataformaId}/activo?activo=${activo}`,
     cambiarClave: (usuarioPlataformaId: number | string) =>
       `/api/platform/usuariosplataforma/${usuarioPlataformaId}/clave`,
+    roles: "/api/platform/usuariosplataforma/roles",
   },
 
   modulosCatalogo: {

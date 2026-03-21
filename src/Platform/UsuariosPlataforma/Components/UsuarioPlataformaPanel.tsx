@@ -1,23 +1,25 @@
-import { CambiarClaveForm } from "./CambiarClaveForm";
+import { SectionCard } from "../../../Shared/Components/ui/SectionCard";
 import { UsuarioPlataformaCreateForm } from "./UsuarioPlataformaCreateForm";
 import { UsuarioPlataformaDetailPanel } from "./UsuarioPlataformaDetailPanel";
 import { UsuarioPlataformaEditForm } from "./UsuarioPlataformaEditForm";
+import { CambiarClaveForm } from "./CambiarClaveForm";
 import type {
   ActualizarUsuarioPlataformaRequest,
   CambiarClaveUsuarioPlataformaRequest,
   CrearUsuarioPlataformaRequest,
+  RolPlataforma,
   UsuarioPlataforma,
 } from "../Types/usuario-plataforma.types";
 
-type Mode = "list" | "detail" | "edit" | "create" | "password";
-
 interface UsuarioPlataformaPanelProps {
-  mode: Mode;
+  mode: "list" | "detail" | "create" | "edit" | "password";
   selectedUsuario: UsuarioPlataforma | null;
   changingStatus: boolean;
   createForm: CrearUsuarioPlataformaRequest;
   editForm: ActualizarUsuarioPlataformaRequest;
   passwordForm: CambiarClaveUsuarioPlataformaRequest;
+  roles: RolPlataforma[];
+  loadingRoles: boolean;
   savingCreate: boolean;
   savingEdit: boolean;
   savingPassword: boolean;
@@ -42,6 +44,40 @@ interface UsuarioPlataformaPanelProps {
   onPasswordSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
+const getPanelTitle = (
+  mode: UsuarioPlataformaPanelProps["mode"],
+): string | null => {
+  switch (mode) {
+    case "create":
+      return "Nuevo usuario";
+    case "edit":
+      return "Editar usuario";
+    case "detail":
+      return "Detalle del usuario";
+    case "password":
+      return "Cambiar clave";
+    default:
+      return null;
+  }
+};
+
+const getPanelDescription = (
+  mode: UsuarioPlataformaPanelProps["mode"],
+): string | null => {
+  switch (mode) {
+    case "create":
+      return "Completa la información para registrar un nuevo usuario de plataforma.";
+    case "edit":
+      return "Actualiza la información principal del usuario de plataforma.";
+    case "detail":
+      return "Consulta los datos del usuario y gestiona sus acciones disponibles.";
+    case "password":
+      return "Define una nueva clave para el usuario seleccionado.";
+    default:
+      return null;
+  }
+};
+
 export const UsuarioPlataformaPanel = ({
   mode,
   selectedUsuario,
@@ -49,6 +85,8 @@ export const UsuarioPlataformaPanel = ({
   createForm,
   editForm,
   passwordForm,
+  roles,
+  loadingRoles,
   savingCreate,
   savingEdit,
   savingPassword,
@@ -65,77 +103,78 @@ export const UsuarioPlataformaPanel = ({
 }: UsuarioPlataformaPanelProps) => {
   if (mode === "list") return null;
 
-  return (
-    <section className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[var(--shadow-md)]">
-      <div className="mb-5 flex items-center justify-between gap-4">
-        <div>
-          <h3 className="text-xl font-semibold text-[var(--color-text)]">
-            {mode === "create" && "Nuevo usuario"}
-            {mode === "edit" && "Editar usuario"}
-            {mode === "detail" && "Detalle de usuario"}
-            {mode === "password" && "Cambiar clave"}
-          </h3>
+  const title = getPanelTitle(mode);
+  const description = getPanelDescription(mode);
 
-          <p className="mt-1 text-sm text-[var(--color-text-soft)]">
-            {mode === "create" &&
-              "Completa la información para registrar un nuevo usuario de plataforma."}
-            {mode === "edit" &&
-              "Actualiza los datos generales del usuario seleccionado."}
-            {mode === "detail" &&
-              "Consulta la información completa del usuario seleccionado."}
-            {mode === "password" &&
-              "Actualiza la clave del usuario seleccionado."}
-          </p>
+  return (
+    <SectionCard>
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-semibold tracking-tight text-[var(--color-text)]">
+              {title}
+            </h2>
+
+            {description && (
+              <p className="text-sm text-[var(--color-text-soft)]">
+                {description}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text)] transition hover:bg-[var(--color-card-hover)]"
+          >
+            Cerrar
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-xl border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-text-soft)] transition hover:bg-[var(--color-card-hover)]"
-        >
-          Cerrar
-        </button>
+        {mode === "create" && (
+          <UsuarioPlataformaCreateForm
+            form={createForm}
+            roles={roles}
+            loadingRoles={loadingRoles}
+            saving={savingCreate}
+            onChange={onCreateChange}
+            onCancel={onClose}
+            onSubmit={onCreateSubmit}
+          />
+        )}
+
+        {mode === "edit" && (
+          <UsuarioPlataformaEditForm
+            form={editForm}
+            roles={roles}
+            loadingRoles={loadingRoles}
+            saving={savingEdit}
+            onChange={onEditChange}
+            onCancel={onClose}
+            onSubmit={onEditSubmit}
+          />
+        )}
+
+        {mode === "password" && selectedUsuario && (
+          <CambiarClaveForm
+            form={passwordForm}
+            saving={savingPassword}
+            onChange={onPasswordChange}
+            onCancel={onClose}
+            onSubmit={onPasswordSubmit}
+          />
+        )}
+
+        {mode === "detail" && selectedUsuario && (
+          <UsuarioPlataformaDetailPanel
+            usuario={selectedUsuario}
+            changingStatus={changingStatus}
+            onEditar={onEditFromDetail}
+            onCambiarClave={onPasswordFromDetail}
+            onToggleActivo={onToggleActivo}
+          />
+        )}
       </div>
-
-      {mode === "detail" && selectedUsuario && (
-        <UsuarioPlataformaDetailPanel
-          usuario={selectedUsuario}
-          changingStatus={changingStatus}
-          onEditar={onEditFromDetail}
-          onCambiarClave={onPasswordFromDetail}
-          onToggleActivo={onToggleActivo}
-        />
-      )}
-
-      {mode === "create" && (
-        <UsuarioPlataformaCreateForm
-          form={createForm}
-          saving={savingCreate}
-          onChange={onCreateChange}
-          onCancel={onClose}
-          onSubmit={onCreateSubmit}
-        />
-      )}
-
-      {mode === "edit" && selectedUsuario && (
-        <UsuarioPlataformaEditForm
-          form={editForm}
-          saving={savingEdit}
-          onChange={onEditChange}
-          onCancel={onClose}
-          onSubmit={onEditSubmit}
-        />
-      )}
-
-      {mode === "password" && selectedUsuario && (
-        <CambiarClaveForm
-          form={passwordForm}
-          saving={savingPassword}
-          onChange={onPasswordChange}
-          onCancel={onClose}
-          onSubmit={onPasswordSubmit}
-        />
-      )}
-    </section>
+    </SectionCard>
   );
 };

@@ -1,8 +1,13 @@
 import { TextField } from "../../../Shared/Components/ui/TextField";
-import type { CrearUsuarioPlataformaRequest } from "../Types/usuario-plataforma.types";
+import type {
+  CrearUsuarioPlataformaRequest,
+  RolPlataforma,
+} from "../Types/usuario-plataforma.types";
 
 interface UsuarioPlataformaCreateFormProps {
   form: CrearUsuarioPlataformaRequest;
+  roles: RolPlataforma[];
+  loadingRoles: boolean;
   saving: boolean;
   onChange: (field: keyof CrearUsuarioPlataformaRequest, value: string) => void;
   onCancel: () => void;
@@ -11,6 +16,8 @@ interface UsuarioPlataformaCreateFormProps {
 
 export const UsuarioPlataformaCreateForm = ({
   form,
+  roles,
+  loadingRoles,
   saving,
   onChange,
   onCancel,
@@ -42,13 +49,29 @@ export const UsuarioPlataformaCreateForm = ({
           onChange={(value) => onChange("email", value)}
         />
 
-        <TextField
-          label="Rol"
-          value={form.rol}
-          onChange={(value) => onChange("rol", value)}
-          required
-          placeholder="Ej: SUPER_ADMIN"
-        />
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-[var(--color-text)]">
+            Rol <span className="text-red-500">*</span>
+          </label>
+
+          <select
+            value={form.rol}
+            onChange={(e) => onChange("rol", e.target.value)}
+            required
+            disabled={loadingRoles || saving}
+            className="w-full rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5 text-sm text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-soft)] disabled:cursor-not-allowed disabled:bg-slate-100"
+          >
+            <option value="">
+              {loadingRoles ? "Cargando roles..." : "Seleccionar rol"}
+            </option>
+
+            {roles.map((rol) => (
+              <option key={rol.rolId} value={rol.codigoRol}>
+                {rol.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <TextField
@@ -70,7 +93,7 @@ export const UsuarioPlataformaCreateForm = ({
 
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || loadingRoles}
           className="rounded-xl bg-[var(--color-text)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {saving ? "Guardando..." : "Crear usuario"}

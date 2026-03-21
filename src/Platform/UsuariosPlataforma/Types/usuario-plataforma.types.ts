@@ -1,13 +1,21 @@
 export type FiltroActivo = "todos" | "activos" | "inactivos";
 
 export interface UsuarioPlataformaDto {
-  UsuarioPlataformaId: number;
-  Nombre: string;
-  Usuario: string;
+  UsuarioPlataformaId?: number;
+  Nombre?: string;
+  Usuario?: string;
   Email?: string | null;
-  Rol: string;
-  Activo: boolean;
-  FechaRegistro: string;
+  Rol?: string;
+  Activo?: boolean;
+  FechaRegistro?: string;
+
+  usuarioPlataformaId?: number;
+  nombre?: string;
+  usuario?: string;
+  email?: string | null;
+  rol?: string;
+  activo?: boolean;
+  fechaRegistro?: string;
 }
 
 export interface UsuarioPlataforma {
@@ -38,4 +46,18 @@ export interface ActualizarUsuarioPlataformaRequest {
 export interface CambiarClaveUsuarioPlataformaRequest {
   nuevaClave: string;
   confirmarNuevaClave: string;
+}
+
+export interface RolPlataformaDto {
+  RolId?: number;
+  CodigoRol?: string;
+  Nombre?: string;
+  EsSuperAdmin?: boolean;
+}
+
+export interface RolPlataforma {
+  rolId: number;
+  codigoRol: string;
+  nombre: string;
+  esSuperAdmin: boolean;
 }

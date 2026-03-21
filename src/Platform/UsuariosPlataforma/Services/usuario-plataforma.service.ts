@@ -5,18 +5,44 @@ import type {
   ActualizarUsuarioPlataformaRequest,
   CambiarClaveUsuarioPlataformaRequest,
   CrearUsuarioPlataformaRequest,
+  RolPlataforma,
+  RolPlataformaDto,
   UsuarioPlataforma,
   UsuarioPlataformaDto,
 } from "../Types/usuario-plataforma.types";
 
-const mapDto = (dto: UsuarioPlataformaDto): UsuarioPlataforma => ({
-  usuarioPlataformaId: dto.UsuarioPlataformaId,
-  nombre: dto.Nombre,
-  usuario: dto.Usuario,
-  email: dto.Email,
-  rol: dto.Rol,
-  activo: dto.Activo,
-  fechaRegistro: dto.FechaRegistro,
+type UsuarioPlataformaApiDto = UsuarioPlataformaDto & {
+  usuarioPlataformaId?: number;
+  nombre?: string;
+  usuario?: string;
+  email?: string | null;
+  rol?: string;
+  activo?: boolean;
+  fechaRegistro?: string;
+};
+
+type RolPlataformaApiDto = RolPlataformaDto & {
+  rolId?: number;
+  codigoRol?: string;
+  nombre?: string;
+  esSuperAdmin?: boolean;
+};
+
+const mapDto = (dto: UsuarioPlataformaApiDto): UsuarioPlataforma => ({
+  usuarioPlataformaId: dto.UsuarioPlataformaId ?? dto.usuarioPlataformaId ?? 0,
+  nombre: dto.Nombre ?? dto.nombre ?? "",
+  usuario: dto.Usuario ?? dto.usuario ?? "",
+  email: dto.Email ?? dto.email ?? "",
+  rol: dto.Rol ?? dto.rol ?? "",
+  activo: dto.Activo ?? dto.activo ?? false,
+  fechaRegistro: dto.FechaRegistro ?? dto.fechaRegistro ?? "",
+});
+
+const mapRolDto = (dto: RolPlataformaApiDto): RolPlataforma => ({
+  rolId: dto.RolId ?? dto.rolId ?? 0,
+  codigoRol: dto.CodigoRol ?? dto.codigoRol ?? "",
+  nombre: dto.Nombre ?? dto.nombre ?? "",
+  esSuperAdmin: dto.EsSuperAdmin ?? dto.esSuperAdmin ?? false,
 });
 
 export const usuarioPlataformaService = {
@@ -27,25 +53,40 @@ export const usuarioPlataformaService = {
         : `${API_ENDPOINTS.usuariosPlataforma.getAll}?activo=${activo}`;
 
     const response =
-      await httpClient.get<ApiResponse<UsuarioPlataformaDto[]>>(endpoint);
+      await httpClient.get<ApiResponse<UsuarioPlataformaApiDto[]>>(endpoint);
 
     return response.data.Data.map(mapDto);
   },
 
   async getById(usuarioPlataformaId: number): Promise<UsuarioPlataforma> {
-    const response = await httpClient.get<ApiResponse<UsuarioPlataformaDto>>(
+    const response = await httpClient.get<ApiResponse<UsuarioPlataformaApiDto>>(
       API_ENDPOINTS.usuariosPlataforma.getById(usuarioPlataformaId),
     );
 
     return mapDto(response.data.Data);
   },
 
+  async getRoles(): Promise<RolPlataforma[]> {
+    const response = await httpClient.get<ApiResponse<RolPlataformaApiDto[]>>(
+      API_ENDPOINTS.usuariosPlataforma.roles,
+    );
+
+    return response.data.Data.map(mapRolDto);
+  },
+
   async create(payload: CrearUsuarioPlataformaRequest): Promise<number> {
     const response = await httpClient.post<
-      ApiResponse<{ UsuarioPlataformaId: number }>
+      ApiResponse<{
+        UsuarioPlataformaId?: number;
+        usuarioPlataformaId?: number;
+      }>
     >(API_ENDPOINTS.usuariosPlataforma.create, payload);
 
-    return response.data.Data.UsuarioPlataformaId;
+    return (
+      response.data.Data.UsuarioPlataformaId ??
+      response.data.Data.usuarioPlataformaId ??
+      0
+    );
   },
 
   async update(
