@@ -1,13 +1,17 @@
 interface AlertMessageProps {
   message: string;
+  title?: string;
   variant?: "success" | "error" | "info" | "warning";
   onClose?: () => void;
+  className?: string;
 }
 
 export const AlertMessage = ({
   message,
+  title,
   variant = "info",
   onClose,
+  className = "",
 }: AlertMessageProps) => {
   const styles = {
     success:
@@ -32,11 +36,16 @@ export const AlertMessage = ({
     warning: "⚠",
   };
 
+  const role =
+    variant === "error" || variant === "warning" ? "alert" : "status";
+  const live =
+    variant === "error" || variant === "warning" ? "assertive" : "polite";
+
   return (
     <div
-      className={`flex items-start justify-between gap-3 rounded-2xl border px-4 py-3 text-sm shadow-sm ${styles[variant]}`}
-      role="alert"
-      aria-live="polite"
+      className={`flex items-start justify-between gap-3 rounded-2xl border px-4 py-3 text-sm shadow-sm ${styles[variant]} ${className}`}
+      role={role}
+      aria-live={live}
     >
       <div className="flex min-w-0 items-start gap-3">
         <span
@@ -46,6 +55,12 @@ export const AlertMessage = ({
         </span>
 
         <div className="min-w-0">
+          {title && (
+            <p className="mb-1 break-words text-sm font-semibold leading-5">
+              {title}
+            </p>
+          )}
+
           <p className="break-words leading-6 font-medium">{message}</p>
         </div>
       </div>
