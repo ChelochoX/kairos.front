@@ -1,7 +1,9 @@
+import type { AlertVariant } from "../../Types/ui.types";
+
 interface AlertMessageProps {
   message: string;
   title?: string;
-  variant?: "success" | "error" | "info" | "warning";
+  variant?: AlertVariant;
   onClose?: () => void;
   className?: string;
 }
@@ -13,7 +15,7 @@ export const AlertMessage = ({
   onClose,
   className = "",
 }: AlertMessageProps) => {
-  const styles = {
+  const styles: Record<AlertVariant, string> = {
     success:
       "border-emerald-200 bg-emerald-50 text-emerald-800 shadow-emerald-100/60",
     error: "border-red-200 bg-red-50 text-red-800 shadow-red-100/60",
@@ -21,7 +23,7 @@ export const AlertMessage = ({
     warning: "border-amber-200 bg-amber-50 text-amber-800 shadow-amber-100/60",
   };
 
-  const iconStyles = {
+  const iconStyles: Record<AlertVariant, string> = {
     success:
       "bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-200",
     error: "bg-red-100 text-red-700 ring-1 ring-inset ring-red-200",
@@ -29,7 +31,7 @@ export const AlertMessage = ({
     warning: "bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-200",
   };
 
-  const icons = {
+  const icons: Record<AlertVariant, string> = {
     success: "✓",
     error: "!",
     info: "i",
@@ -61,7 +63,7 @@ export const AlertMessage = ({
             </p>
           )}
 
-          <p className="break-words leading-6 font-medium">{message}</p>
+          <p className="break-words font-medium leading-6">{message}</p>
         </div>
       </div>
 

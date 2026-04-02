@@ -2,12 +2,13 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { PrivateGuard } from "../Guards/PrivateGuard";
 import { AuthLayout } from "../Layouts/AuthLayout";
 import { DashboardLayout } from "../Layouts/DashboardLayout";
+import { ROUTES } from "./routes";
 
-import { LoginPage } from "../../Platform/Auth/Pages/LoginPage";
+import { CoreLoginPage } from "../../Core/Auth/Pages/CoreLoginPage";
+import { LoginPage as EmpresasLoginPage } from "../../Platform/Auth/Pages/LoginPage";
+
 import { DashboardPage } from "../../Platform/Dashboard/Pages/DashboardPage";
-
 import { EmpresasPage } from "../../Platform/Empresas/Pages/EmpresasPage";
-
 import { UsuariosPlataformaPage } from "../../Platform/UsuariosPlataforma/Pages/UsuariosPlataformaPage";
 import { ModulosCatalogoPage } from "../../Platform/ModulosCatalogo/Pages/ModulosCatalogoPage";
 import { ModulosEmpresaPage } from "../../Platform/ModulosEmpresa/Pages/ModulosEmpresaPage";
@@ -19,38 +20,48 @@ export const AppRouter = () => {
     <BrowserRouter>
       <Routes>
         <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path={ROUTES.AUTH.CORE_LOGIN} element={<CoreLoginPage />} />
+          <Route
+            path={ROUTES.AUTH.EMPRESAS_LOGIN}
+            element={<EmpresasLoginPage />}
+          />
         </Route>
 
         <Route element={<PrivateGuard />}>
           <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/dashboard/empresas" element={<EmpresasPage />} />
+            <Route path={ROUTES.CORE.DASHBOARD} element={<DashboardPage />} />
+            <Route path={ROUTES.CORE.EMPRESAS} element={<EmpresasPage />} />
             <Route
-              path="/dashboard/usuarios-plataforma"
+              path={ROUTES.CORE.USUARIOS_PLATAFORMA}
               element={<UsuariosPlataformaPage />}
             />
             <Route
-              path="/dashboard/modulos-catalogo"
+              path={ROUTES.CORE.MODULOS_CATALOGO}
               element={<ModulosCatalogoPage />}
             />
             <Route
-              path="/dashboard/modulos-empresa"
+              path={ROUTES.CORE.MODULOS_EMPRESA}
               element={<ModulosEmpresaPage />}
             />
             <Route
-              path="/dashboard/dominios-empresa"
+              path={ROUTES.CORE.DOMINIOS_EMPRESA}
               element={<DominiosEmpresaPage />}
             />
             <Route
-              path="/dashboard/bases-datos-empresa"
+              path={ROUTES.CORE.BASES_DATOS_EMPRESA}
               element={<BasesDatosEmpresaPage />}
             />
           </Route>
         </Route>
 
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/"
+          element={<Navigate to={ROUTES.AUTH.CORE_LOGIN} replace />}
+        />
+        <Route
+          path="*"
+          element={<Navigate to={ROUTES.AUTH.CORE_LOGIN} replace />}
+        />
       </Routes>
     </BrowserRouter>
   );
