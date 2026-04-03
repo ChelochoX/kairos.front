@@ -12,4 +12,7 @@ export const ROUTES = {
     DOMINIOS_EMPRESA: "/core/dominios-empresa",
     BASES_DATOS_EMPRESA: "/core/bases-datos-empresa",
   },
-};
+  PLATFORM: {
+    DASHBOARD: "/platform/dashboard",
+  },
+} as const;

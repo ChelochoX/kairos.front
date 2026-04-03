@@ -7,7 +7,9 @@ import { ROUTES } from "./routes";
 import { CoreLoginPage } from "../../Core/Auth/Pages/CoreLoginPage";
 import { LoginPage as EmpresasLoginPage } from "../../Platform/Auth/Pages/LoginPage";
 
-import { DashboardPage } from "../../Platform/Dashboard/Pages/DashboardPage";
+import { DashboardPage as CoreDashboardPage } from "../../Core/Dashboard/Pages/DashboardPage";
+import { DashboardPage as PlatformDashboardPage } from "../../Platform/Dashboard/Pages/DashboardPage";
+
 import { EmpresasPage } from "../../Platform/Empresas/Pages/EmpresasPage";
 import { UsuariosPlataformaPage } from "../../Platform/UsuariosPlataforma/Pages/UsuariosPlataformaPage";
 import { ModulosCatalogoPage } from "../../Platform/ModulosCatalogo/Pages/ModulosCatalogoPage";
@@ -29,7 +31,16 @@ export const AppRouter = () => {
 
         <Route element={<PrivateGuard />}>
           <Route element={<DashboardLayout />}>
-            <Route path={ROUTES.CORE.DASHBOARD} element={<DashboardPage />} />
+            <Route
+              path={ROUTES.CORE.DASHBOARD}
+              element={<CoreDashboardPage />}
+            />
+
+            <Route
+              path={ROUTES.PLATFORM.DASHBOARD}
+              element={<PlatformDashboardPage />}
+            />
+
             <Route path={ROUTES.CORE.EMPRESAS} element={<EmpresasPage />} />
             <Route
               path={ROUTES.CORE.USUARIOS_PLATAFORMA}
