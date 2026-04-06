@@ -1,7 +1,8 @@
 export const ROUTES = {
   AUTH: {
     CORE_LOGIN: "/auth/core/login",
-    EMPRESAS_LOGIN: "/auth/empresas/login",
+    MASTER_LOGIN: "/auth/platform/login",
+    MASTER_RESET_PASSWORD: "/auth/platform/reset-password",
   },
   CORE: {
     DASHBOARD: "/core/dashboard",

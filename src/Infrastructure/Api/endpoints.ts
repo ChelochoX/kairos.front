@@ -1,6 +1,9 @@
 export const API_ENDPOINTS = {
   auth: {
     login: "/api/platform/auth/login",
+    forgotPassword: "/api/platform/auth/forgot-password",
+    resetPassword: "/api/platform/auth/reset-password",
+    logout: "/api/platform/auth/logout",
   },
 
   empresas: {

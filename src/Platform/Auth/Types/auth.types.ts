@@ -12,3 +12,18 @@ export interface LoginPlataformaResponse {
   email?: string | null;
   rol: string;
 }
+
+export interface ForgotPasswordPlataformaRequest {
+  usuario: string;
+}
+
+export interface ForgotPasswordPlataformaResponse {
+  mensaje: string;
+  tokenRecuperacion?: string | null;
+}
+
+export interface ResetPasswordPlataformaRequest {
+  token: string;
+  nuevaClave: string;
+  confirmarNuevaClave: string;
+}

@@ -1,42 +1,39 @@
 import { useState } from "react";
-import { useAuthStore } from "../../../App/Store/auth.store";
 import { getApiErrorMessageFromUnknown } from "../../../Shared/Utils/apiError.util";
 import { authService } from "../Services/auth.service";
 import type {
-  LoginPlataformaRequest,
-  LoginPlataformaResponse,
+  ForgotPasswordPlataformaRequest,
+  ForgotPasswordPlataformaResponse,
 } from "../Types/auth.types";
 
-export const useLogin = () => {
-  const { setAuth } = useAuthStore();
-
+export const useForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const login = async (
-    payload: LoginPlataformaRequest,
-  ): Promise<LoginPlataformaResponse | null> => {
+  const forgotPassword = async (
+    payload: ForgotPasswordPlataformaRequest,
+  ): Promise<ForgotPasswordPlataformaResponse | null> => {
     try {
       setLoading(true);
       setError(null);
 
-      const data = await authService.login(payload);
+      const data = await authService.forgotPassword(payload);
 
-      if (!data?.token) {
-        setError("La respuesta del servidor no contiene un token válido.");
+      if (!data?.tokenRecuperacion) {
+        setError(
+          "No pudimos preparar el cambio de contraseña en este momento.",
+        );
         return null;
       }
 
-      setAuth(data);
-
       return data;
     } catch (err: unknown) {
-      console.error("Error en login:", err);
+      console.error("Error en forgotPassword:", err);
 
       setError(
         getApiErrorMessageFromUnknown(
           err,
-          "No pudimos iniciar sesión en este momento. Intentá nuevamente.",
+          "No pudimos iniciar la recuperación de contraseña. Intentá nuevamente.",
         ),
       );
 
@@ -47,8 +44,9 @@ export const useLogin = () => {
   };
 
   return {
-    login,
+    forgotPassword,
     loading,
     error,
+    setError,
   };
 };

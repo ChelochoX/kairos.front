@@ -1,8 +1,36 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../Store/auth.store";
+import { ROUTES } from "../Router/routes";
+import { useCoreAuth } from "../../Core/Auth/Hooks/useCoreAuth";
 
 export const DashboardLayout = () => {
-  const { user, logout } = useAuthStore();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isCoreRoute = location.pathname.startsWith("/core");
+
+  const { user: platformUser, logout: platformLogout } = useAuthStore();
+  const { getSession, logout: coreLogout } = useCoreAuth();
+
+  const coreSession = getSession();
+
+  const userName = isCoreRoute
+    ? (coreSession?.usuario?.nombreCompleto ?? "Usuario")
+    : (platformUser?.nombre ?? "Usuario");
+
+  const userRole = isCoreRoute
+    ? (coreSession?.roles?.[0] ?? "ADMIN_EMPRESA")
+    : (platformUser?.rol ?? "SUPER_ADMIN");
+
+  const handleLogout = async () => {
+    if (isCoreRoute) {
+      await coreLogout();
+      return;
+    }
+
+    platformLogout();
+    navigate(ROUTES.AUTH.MASTER_LOGIN, { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,var(--color-bg)_0%,var(--color-bg-soft)_100%)]">
@@ -26,16 +54,16 @@ export const DashboardLayout = () => {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:justify-end">
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-sm)]">
               <p className="text-sm font-semibold leading-5 text-[var(--color-text)]">
-                {user?.nombre ?? "Usuario"}
+                {userName}
               </p>
               <p className="break-words text-xs font-medium uppercase tracking-wide text-[var(--color-text-soft)]">
-                {user?.rol ?? "SUPER_ADMIN"}
+                {userRole}
               </p>
             </div>
 
             <button
               type="button"
-              onClick={logout}
+              onClick={handleLogout}
               className="inline-flex items-center justify-center rounded-2xl bg-[var(--color-text)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
             >
               Cerrar sesión

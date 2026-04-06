@@ -1,6 +1,12 @@
 import type { ApiResponse } from "../Types/api-response.types";
 import { getFriendlyMessage } from "./apiMessage.util";
 
+type ErrorWithResponseData = {
+  response?: {
+    data?: ApiResponse<null>;
+  };
+};
+
 export const getApiErrorMessage = async (
   response: Response,
 ): Promise<string> => {
@@ -26,4 +32,24 @@ export const getApiErrorMessage = async (
   } catch {
     return "Ocurrió un inconveniente al comunicarse con el servidor.";
   }
+};
+
+export const getApiErrorMessageFromUnknown = (
+  error: unknown,
+  fallbackMessage = "Ocurrió un inconveniente. Intentá nuevamente.",
+): string => {
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const errorWithResponse = error as ErrorWithResponseData;
+    const responseData = errorWithResponse.response?.data;
+
+    if (responseData) {
+      return getFriendlyMessage(
+        responseData.StatusCode,
+        responseData.Message,
+        responseData.Errors,
+      );
+    }
+  }
+
+  return fallbackMessage;
 };

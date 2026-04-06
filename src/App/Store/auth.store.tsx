@@ -1,4 +1,10 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { authStorage } from "../../Infrastructure/Storage/authStorage";
 import type { LoginPlataformaResponse } from "../../Platform/Auth/Types/auth.types";
 
@@ -40,7 +46,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setAuth,
       logout,
     }),
-    [token, user]
+    [token, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -5,7 +5,8 @@ import { DashboardLayout } from "../Layouts/DashboardLayout";
 import { ROUTES } from "./routes";
 
 import { CoreLoginPage } from "../../Core/Auth/Pages/CoreLoginPage";
-import { LoginPage as EmpresasLoginPage } from "../../Platform/Auth/Pages/LoginPage";
+import { MasterLoginPage } from "../../Platform/Auth/Pages/MasterLoginPage";
+import { ResetPasswordPage } from "../../Platform/Auth/Pages/ResetPasswordPage";
 
 import { DashboardPage as CoreDashboardPage } from "../../Core/Dashboard/Pages/DashboardPage";
 import { DashboardPage as PlatformDashboardPage } from "../../Platform/Dashboard/Pages/DashboardPage";
@@ -24,8 +25,12 @@ export const AppRouter = () => {
         <Route element={<AuthLayout />}>
           <Route path={ROUTES.AUTH.CORE_LOGIN} element={<CoreLoginPage />} />
           <Route
-            path={ROUTES.AUTH.EMPRESAS_LOGIN}
-            element={<EmpresasLoginPage />}
+            path={ROUTES.AUTH.MASTER_LOGIN}
+            element={<MasterLoginPage />}
+          />
+          <Route
+            path={ROUTES.AUTH.MASTER_RESET_PASSWORD}
+            element={<ResetPasswordPage />}
           />
         </Route>
 
